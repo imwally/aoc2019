@@ -57,7 +57,7 @@ func main() {
 
 				x := ops[ops[i+1]]
 				y := ops[ops[i+2]]
-				pos := ops[ops[i+3]]
+				pos := ops[i+3]
 
 				if pos > len(ops) {
 					break

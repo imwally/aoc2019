@@ -49,11 +49,11 @@ func main() {
 
 		x := ops[ops[i+1]]
 		y := ops[ops[i+2]]
-		pos := ops[ops[i+3]]
+		pos := ops[i+3]
 
 		ops[pos] = opCodes[op](x, y)
 	}
 
 	// For some reason my result is in position 1
-	fmt.Println(ops[1])
+	fmt.Println(ops[0])
 }
