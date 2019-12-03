@@ -20,9 +20,8 @@ var stepsB int = 0
 type grid [gridSize][gridSize]*GridPoint
 
 type GridPoint struct {
-	Intersection bool
-	StepsA       int
-	StepsB       int
+	StepsA int
+	StepsB int
 }
 
 func PrintGrid(g *grid) {
@@ -63,8 +62,6 @@ func Trace(g *grid, x int, y int, steps int, dir string, wire string) (int, int)
 		g[x][y] = gp
 
 		if gp.StepsA > 0 && gp.StepsB > 0 {
-			gp.Intersection = true
-
 			bothSteps := gp.StepsA + gp.StepsB
 			if bothSteps < totalSteps {
 				totalSteps = bothSteps
