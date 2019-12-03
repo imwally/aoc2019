@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/imwally/aoc2019/intcode"
+	"github.com/imwally/aoc2019/machine"
 )
 
 type Codes struct {
@@ -36,7 +36,7 @@ func TestIntcode(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := intcode.Run(c.Input)
+		got := machine.Run(c.Input)
 		for i, v := range got {
 			if v != c.Result[i] {
 				t.Errorf("error: got %v, expected %v", v, c.Result[i])

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imwally/aoc2019/intcode"
+	"github.com/imwally/aoc2019/machine"
 )
 
 var program = []int{
@@ -30,7 +30,7 @@ func main() {
 	program1[1] = 12
 	program1[2] = 2
 
-	part1 := intcode.Run(program1)
+	part1 := machine.Run(program1)
 	fmt.Println("Part 1:", part1[0])
 
 	// PART 2
@@ -39,7 +39,7 @@ func main() {
 		for j := 0; j < 100; j++ {
 			copy(program2, program)
 			program2[1], program[2] = i, j
-			program2 = intcode.Run(program2)
+			program2 = machine.Run(program2)
 
 			if program2[0] == 19690720 {
 				fmt.Println("Part 2:", 100*program2[1]+program[2])

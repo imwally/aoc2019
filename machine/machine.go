@@ -1,4 +1,4 @@
-package intcode
+package machine
 
 func Add(x, y int) int {
 	return x + y
