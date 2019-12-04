@@ -16,11 +16,9 @@ func Duplicates(s string) bool {
 }
 
 func Increasing(s string) bool {
-	for i := 0; i < len(s); i++ {
-		for j := i; j < len(s); j++ {
-			if s[i] > s[j] {
-				return false
-			}
+	for i := 0; i < len(s)-1; i++ {
+		if s[i+1] < s[i] {
+			return false
 		}
 	}
 
