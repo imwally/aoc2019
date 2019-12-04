@@ -32,12 +32,8 @@ func LargerGroup(s string) bool {
 	}
 
 	for _, v := range dups {
-		if v >= 2 {
-			for _, v2 := range dups {
-				if v2 == 2 {
-					return false
-				}
-			}
+		if v == 2 {
+			return false
 		}
 	}
 
