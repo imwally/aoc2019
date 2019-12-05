@@ -1,32 +1,71 @@
 package machine
 
-func Add(x, y int) int {
-	return x + y
-}
-
-func Multiply(x, y int) int {
-	return x * y
-}
+import "fmt"
 
 func Run(ops []int) []int {
-	// Map opcodes to functions
-	opCodes := map[int]func(int, int) int{
-		1: Add,
-		2: Multiply,
-	}
+	for i := 0; ; {
+		ins := ops[i]
+		op := ins % 100
 
-	for i := 0; ; i = i + 4 {
-		op := ops[i]
-
-		if op == 99 || ops[i+1] > len(ops) || ops[i+2] > len(ops) || ops[i+3] > len(ops) {
+		if op == 99 {
 			break
 		}
 
-		x := ops[ops[i+1]]
-		y := ops[ops[i+2]]
-		pos := ops[i+3]
+		p1, p2, p3 := 0, 0, 0
+		if ins > 1000 {
+			params := ins - op
 
-		ops[pos] = opCodes[op](x, y)
+			pm1 := params % 100
+			pm2 := params % 10000 / 1000
+			pm3 := params % 100000 / 10000
+
+			i++
+			if pm1 == 0 {
+				p1 = ops[ops[i]]
+			} else {
+				p1 = ops[i]
+			}
+
+			i++
+			if pm2 == 0 {
+				p2 = ops[ops[i]]
+			} else {
+				p2 = ops[i]
+			}
+
+			i++
+			if pm3 == 0 {
+				p3 = ops[i]
+			} else {
+				p3 = i
+			}
+			i++
+		} else {
+			i++
+			p1 = ops[ops[i]]
+			i++
+			p2 = ops[ops[i]]
+			i++
+			p3 = ops[i]
+			i++
+		}
+
+		switch op {
+		case 1:
+			ops[p3] = p1 + p2
+		case 2:
+			ops[p3] = p1 * p2
+		case 3:
+			var v int
+			_, err := fmt.Scanf("%d", &v)
+			if err != nil {
+				panic("shit broke")
+			}
+			ops[p3] = v
+		case 4:
+			fmt.Println(p1)
+		}
+
 	}
 
 	return ops

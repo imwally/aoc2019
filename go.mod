@@ -1,3 +1,3 @@
-module github.com/imwally/aoc219
+module github.com/imwally/aoc2019
 
 go 1.13
