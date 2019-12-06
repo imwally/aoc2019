@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-func PrintOrbits(orbitMap map[string][]string, current string, i int, j int) int {
+func CountOrbits(orbitMap map[string][]string, current string, i int, j int) int {
 	for _, v := range orbitMap[current] {
-		j = PrintOrbits(orbitMap, v, i+1, j+i)
+		j = CountOrbits(orbitMap, v, i+1, j+i)
 	}
 
 	return j
@@ -23,7 +23,7 @@ func TotalOrbits(om []string) int {
 		orbits[objs[0]] = append(orbits[objs[0]], objs[1])
 	}
 
-	return PrintOrbits(orbits, "COM", 0, 0) + len(om)
+	return CountOrbits(orbits, "COM", 0, 0) + len(om)
 }
 
 func main() {
