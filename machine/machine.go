@@ -33,14 +33,12 @@ func Run(ops []int) []int {
 			}
 		}
 
-		if op < 3 || op == 7 || op == 8 {
-			i++
-		}
-
 		switch op {
 		case 1:
+			i++ // Parameter 3
 			ops[ops[i]] = p1 + p2
 		case 2:
+			i++ // Parameter 3
 			ops[ops[i]] = p1 * p2
 		case 3:
 			var v int
@@ -60,12 +58,14 @@ func Run(ops []int) []int {
 				i = p2 - 1
 			}
 		case 7:
+			i++ // Parameter 3
 			if p1 < p2 {
 				ops[ops[i]] = 1
 			} else {
 				ops[ops[i]] = 0
 			}
 		case 8:
+			i++ // Parameter 3
 			if p1 == p2 {
 				ops[ops[i]] = 1
 			} else {
