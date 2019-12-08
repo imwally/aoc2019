@@ -1,14 +1,27 @@
 package main
 
-import (
-	"testing"
-)
+import "testing"
 
-func TestParseOrbits(t *testing.T) {
-	orbitMap := []string{"COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L"}
+func TestPart1(t *testing.T) {
+	objects := []string{"COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L"}
+	om, _ := BuildMaps(objects)
+
 	expected := 42
-	got := TotalOrbits(orbitMap)
+	got := AllOrbits(om, "COM") + len(objects)
 	if got != expected {
 		t.Errorf("error: got %v, expected %v", got, expected)
 	}
+
+}
+
+func TestPart2(t *testing.T) {
+	orbitMap := []string{"COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L", "K)YOU", "I)SAN"}
+	_, pm := BuildMaps(orbitMap)
+
+	expected := 4
+	got := OrbitsFromTo(pm, "YOU", "SAN")
+	if got != expected {
+		t.Errorf("error: got %v, expected %v", got, expected)
+	}
+
 }
