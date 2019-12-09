@@ -2,7 +2,9 @@ package machine
 
 import "fmt"
 
-func Run(ops []int) []int {
+func Run(ops []int, input []int) ([]int, []int) {
+	var output []int
+	oi := 0
 	for i := 0; ; i++ {
 		ins := ops[i]
 		op := ins % 100
@@ -24,7 +26,7 @@ func Run(ops []int) []int {
 			p1 = ops[i]
 		}
 
-		if op < 3 || op == 5 || op == 6 || op == 7 || op == 8 {
+		if op < 3 || op > 4 {
 			i++
 			if pm2 == 0 {
 				p2 = ops[ops[i]]
@@ -42,13 +44,22 @@ func Run(ops []int) []int {
 			ops[ops[i]] = p1 * p2
 		case 3:
 			var v int
-			_, err := fmt.Scanf("%d", &v)
-			if err != nil {
-				panic("shit broke")
+			if input == nil {
+				_, err := fmt.Scanf("%d", &v)
+				if err != nil {
+					panic("shit broke")
+				}
+			} else {
+				v = input[oi]
+				oi++
 			}
 			ops[ops[i]] = v
 		case 4:
-			fmt.Println(p1)
+			if input == nil {
+				fmt.Println(p1)
+			} else {
+				output = append(output, p1)
+			}
 		case 5:
 			if p1 != 0 {
 				i = p2 - 1
@@ -77,5 +88,5 @@ func Run(ops []int) []int {
 
 	}
 
-	return ops
+	return ops, output
 }
