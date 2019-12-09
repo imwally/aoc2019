@@ -18,16 +18,13 @@ type ObjectMap struct {
 
 type ParentMap map[string][]string
 
-func CountAllOrbits(om ObjectMap, current string, i int, j int) int {
-	for _, v := range om.Objects[current] {
-		j = CountAllOrbits(om, v.Name, i+1, j+i)
+func AllOrbits(pm ParentMap) int {
+	i := 0
+	for _, v := range pm {
+		i += len(v)
 	}
 
-	return j
-}
-
-func AllOrbits(om ObjectMap, start string) int {
-	return CountAllOrbits(om, start, 0, 0)
+	return i
 }
 
 func OrbitsFromTo(p ParentMap, a, b string) int {
@@ -79,9 +76,9 @@ func main() {
 		fmt.Println(err)
 	}
 
-	om, pm := BuildMaps(objects)
+	_, pm := BuildMaps(objects)
 	// Part 1
-	fmt.Println("Part 1:", AllOrbits(om, "COM"))
+	fmt.Println("Part 1:", AllOrbits(pm)-len(objects)-1)
 
 	// Part 2
 	fmt.Println("Part 2:", OrbitsFromTo(pm, "YOU", "SAN"))

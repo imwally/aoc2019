@@ -4,10 +4,10 @@ import "testing"
 
 func TestPart1(t *testing.T) {
 	objects := []string{"COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L"}
-	om, _ := BuildMaps(objects)
+	_, pm := BuildMaps(objects)
 
 	expected := 42
-	got := AllOrbits(om, "COM") + len(objects)
+	got := AllOrbits(pm) - len(objects) - 1
 	if got != expected {
 		t.Errorf("error: got %v, expected %v", got, expected)
 	}
