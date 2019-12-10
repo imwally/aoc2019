@@ -17,24 +17,29 @@ const (
 )
 
 type Machine struct {
-	IP          int
-	Operation   int
-	Parameters  []int
-	Memory      []int
-	MockedInput int
-	Mock        bool
-	Halted      bool
+	IP           int
+	Operation    int
+	Parameters   []int
+	Memory       []int
+	Output       []int
+	SavingOutput bool
+	MockedInput  int
+	Mock         bool
+	Halted       bool
 }
 
 func New(opcodes []int) *Machine {
 	parameters := make([]int, 3)
 	memory := make([]int, len(opcodes))
 	copy(memory, opcodes)
+
+	var output []int
 	return &Machine{
 		IP:         0,
 		Operation:  0,
 		Parameters: parameters,
 		Memory:     memory,
+		Output:     output,
 		Mock:       false,
 		Halted:     false,
 	}
@@ -126,7 +131,11 @@ func (m *Machine) input() {
 
 func (m *Machine) output() {
 	p1 := m.Parameters[0]
-	fmt.Println(p1)
+	if m.SavingOutput {
+		m.Output = append(m.Output, p1)
+	} else {
+		fmt.Println(p1)
+	}
 }
 
 func (m *Machine) jumpIfTrue() {
@@ -180,6 +189,10 @@ func (m *Machine) DumpMemory() []int {
 func (m *Machine) MockInput(v int) {
 	m.Mock = true
 	m.MockedInput = v
+}
+
+func (m *Machine) SaveOutput() {
+	m.SavingOutput = true
 }
 
 func (m *Machine) Run() {
