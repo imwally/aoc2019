@@ -55,5 +55,6 @@ var program = []int{
 }
 
 func main() {
-	machine.Run(program)
+	m := machine.New(program)
+	m.Run()
 }

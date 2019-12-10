@@ -30,7 +30,9 @@ func main() {
 	program1[1] = 12
 	program1[2] = 2
 
-	part1 := machine.Run(program1)
+	m := machine.New(program1)
+	m.Run()
+	part1 := m.DumpMemory()
 	fmt.Println("Part 1:", part1[0])
 
 	// PART 2
@@ -39,7 +41,9 @@ func main() {
 		for j := 0; j < 100; j++ {
 			copy(program2, program)
 			program2[1], program[2] = i, j
-			program2 = machine.Run(program2)
+			m2 := machine.New(program2)
+			m2.Run()
+			program2 = m2.DumpMemory()
 
 			if program2[0] == 19690720 {
 				fmt.Println("Part 2:", 100*program2[1]+program[2])

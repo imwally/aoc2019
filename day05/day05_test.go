@@ -10,7 +10,10 @@ func TestSave(t *testing.T) {
 	program := []int{1002, 4, 3, 4, 33}
 	expected := []int{1002, 4, 3, 4, 99}
 
-	got := machine.Run(program)
+	m := machine.New(program)
+	m.Run()
+
+	got := m.DumpMemory()
 
 	for i, _ := range expected {
 		if got[i] != expected[i] {
