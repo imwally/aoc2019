@@ -17,15 +17,18 @@ const (
 )
 
 type Machine struct {
-	IP           int
-	Operation    int
-	Parameters   []int
-	Memory       []int
-	Output       []int
-	SavingOutput bool
-	MockedInput  int
-	Mock         bool
-	Halted       bool
+	IP          int
+	Operation   int
+	Parameters  []int
+	Memory      []int
+	Output      int
+	MockedInput []int
+	MockIndex   int
+	StoreOutput bool
+	Mock        bool
+	Halted      bool
+	RunSetTimes bool
+	RunCounter  int
 }
 
 func New(opcodes []int) *Machine {
@@ -33,14 +36,13 @@ func New(opcodes []int) *Machine {
 	memory := make([]int, len(opcodes))
 	copy(memory, opcodes)
 
-	var output []int
 	return &Machine{
 		IP:         0,
 		Operation:  0,
 		Parameters: parameters,
 		Memory:     memory,
-		Output:     output,
 		Mock:       false,
+		MockIndex:  0,
 		Halted:     false,
 	}
 }
@@ -120,10 +122,11 @@ func (m *Machine) input() {
 	if !m.Mock {
 		_, err := fmt.Scanf("%d", &v)
 		if err != nil {
-			panic("shit broke")
+			panic("input error")
 		}
 	} else {
-		v = m.MockedInput
+		v = m.MockedInput[m.MockIndex]
+		m.MockIndex++
 	}
 
 	m.Memory[m.Memory[m.IP]] = v
@@ -131,8 +134,8 @@ func (m *Machine) input() {
 
 func (m *Machine) output() {
 	p1 := m.Parameters[0]
-	if m.SavingOutput {
-		m.Output = append(m.Output, p1)
+	if m.StoreOutput {
+		m.Output = p1
 	} else {
 		fmt.Println(p1)
 	}
@@ -186,13 +189,20 @@ func (m *Machine) DumpMemory() []int {
 	return m.Memory
 }
 
-func (m *Machine) MockInput(v int) {
+func (m *Machine) MockInput(input []int) {
 	m.Mock = true
-	m.MockedInput = v
+	for _, v := range input {
+		m.MockedInput = append(m.MockedInput, v)
+	}
 }
 
 func (m *Machine) SaveOutput() {
-	m.SavingOutput = true
+	m.StoreOutput = true
+}
+
+func (m *Machine) RunFor(times int) {
+	m.RunSetTimes = true
+	m.RunCounter = times
 }
 
 func (m *Machine) Run() {
@@ -210,6 +220,13 @@ func (m *Machine) Run() {
 		case opInput:
 			m.input()
 		case opOutput:
+			if m.RunSetTimes {
+				if m.RunCounter == 0 {
+					return
+				}
+				m.RunCounter--
+			}
+
 			m.output()
 		case opJumpT:
 			m.jumpIfTrue()

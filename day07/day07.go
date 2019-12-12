@@ -64,32 +64,22 @@ func main() {
 
 	// Part 1
 	perms := permutations([]int{0, 1, 2, 3, 4})
-	fmt.Println(permutations)
-
-	machines := []*machine.Machine{
-		machine.New(program),
-		machine.New(program),
-		machine.New(program),
-		machine.New(program),
-		machine.New(program),
-	}
 
 	output := 0
 	max := 0
 	for _, perm := range perms {
-		for i, seq := range perm {
-			m := machines[i]
+		for i := 0; i < len(perm); i++ {
+			m := machine.New(program)
 			m.SaveOutput()
-			m.MockInput([]int{seq, output, 0})
+			m.MockInput([]int{perm[i], output})
 			m.RunFor(1)
 			m.Run()
 			output = m.Output
-			fmt.Println(output)
 			if output > max {
 				max = output
 			}
-			m.IP = 0
 		}
+		output = 0
 	}
 	fmt.Println("Part 1:", max)
 
