@@ -64,6 +64,7 @@ func Part2(program []int) int {
 	max := 0
 	for _, perm := range perms {
 
+		// Setup new machines
 		machines := []*machine.Machine{
 			machine.New(program),
 			machine.New(program),
@@ -72,7 +73,7 @@ func Part2(program []int) int {
 			machine.New(program),
 		}
 
-		// Initialize Amps
+		// Initialize machines on first round
 		for i := 0; i < len(perm); i++ {
 			m := machines[i]
 			m.SaveOutput()
