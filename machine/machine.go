@@ -191,6 +191,7 @@ func (m *Machine) DumpMemory() []int {
 
 func (m *Machine) MockInput(input []int) {
 	m.Mock = true
+
 	for _, v := range input {
 		m.MockedInput = append(m.MockedInput, v)
 	}
@@ -220,14 +221,16 @@ func (m *Machine) Run() {
 		case opInput:
 			m.input()
 		case opOutput:
+			m.output()
 			if m.RunSetTimes {
+				m.RunCounter--
 				if m.RunCounter == 0 {
+					m.RunSetTimes = false
+					m.IP++
 					return
 				}
-				m.RunCounter--
 			}
 
-			m.output()
 		case opJumpT:
 			m.jumpIfTrue()
 		case opJumpF:

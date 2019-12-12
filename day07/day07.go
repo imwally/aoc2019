@@ -34,6 +34,79 @@ func permutations(arr []int) [][]int {
 	return res
 }
 
+func Part1(program []int) int {
+	perms := permutations([]int{0, 1, 2, 3, 4})
+
+	output := 0
+	max := 0
+	for _, perm := range perms {
+		for i := 0; i < len(perm); i++ {
+			m := machine.New(program)
+			m.SaveOutput()
+			m.MockInput([]int{perm[i], output})
+			m.RunFor(1)
+			m.Run()
+			output = m.Output
+			if output > max {
+				max = output
+			}
+		}
+		output = 0
+	}
+
+	return max
+}
+
+func Part2(program []int) int {
+	perms := permutations([]int{5, 6, 7, 8, 9})
+
+	output := 0
+	max := 0
+	for _, perm := range perms {
+
+		machines := []*machine.Machine{
+			machine.New(program),
+			machine.New(program),
+			machine.New(program),
+			machine.New(program),
+			machine.New(program),
+		}
+
+		// Initialize Amps
+		for i := 0; i < len(perm); i++ {
+			m := machines[i]
+			m.SaveOutput()
+			m.MockInput([]int{perm[i], output})
+			m.RunFor(1)
+			m.Run()
+			output = m.Output
+		}
+
+		// Start feedback loop
+		for i := 0; i < len(perm); i++ {
+			m := machines[i]
+			m.SaveOutput()
+			m.MockInput([]int{output})
+			m.RunFor(1)
+			m.Run()
+			output = m.Output
+			if output > max {
+				max = output
+			}
+			if i == 4 && m.Halted {
+				break
+			}
+			if i == 4 {
+				i = -1
+			}
+		}
+		output = 0
+
+	}
+
+	return max
+}
+
 func main() {
 	program := []int{3, 8, 1001, 8, 10, 8, 105, 1, 0, 0, 21, 46, 59, 80,
 		105, 122, 203, 284, 365, 446, 99999, 3, 9, 102, 3, 9, 9, 1001, 9, 5, 9,
@@ -62,25 +135,6 @@ func main() {
 		9, 1002, 9, 2, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1001,
 		9, 1, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 99}
 
-	// Part 1
-	perms := permutations([]int{0, 1, 2, 3, 4})
-
-	output := 0
-	max := 0
-	for _, perm := range perms {
-		for i := 0; i < len(perm); i++ {
-			m := machine.New(program)
-			m.SaveOutput()
-			m.MockInput([]int{perm[i], output})
-			m.RunFor(1)
-			m.Run()
-			output = m.Output
-			if output > max {
-				max = output
-			}
-		}
-		output = 0
-	}
-	fmt.Println("Part 1:", max)
-
+	fmt.Println("Part 1:", Part1(program))
+	fmt.Println("Part 2:", Part2(program))
 }
