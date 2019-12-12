@@ -29,6 +29,6 @@ func TestOutput(t *testing.T) {
 		99}
 
 	m2 := machine.New(program2)
-	m2.MockInput(8)
+	m2.MockInput([]int{8})
 	m2.Run()
 }
