@@ -48,16 +48,30 @@ func main() {
 
 	fmt.Println("Part 1:", numOnes*numTwos)
 
-	/*
-		for _, layer := range layers {
-			for i, r := range layer {
-				fmt.Printf("%c", r)
-				if (i+1)%width == 0 {
-					fmt.Println()
-				}
-			}
+	finalLayer := make([]string, height*width)
+
+	i, j := 0, 0
+	for i < len(layers) && j < len(layers[0]) {
+		if finalLayer[j] != "" {
+		} else if string(layers[i][j]) == "0" {
+			finalLayer[j] = "🆑"
+		} else if string(layers[i][j]) == "1" {
+			finalLayer[j] = "❎"
+		}
+
+		if i == len(layers)-1 {
+			i = -1
+			j++
+		}
+		i++
+	}
+
+	fmt.Println("Part 2:")
+
+	for i, pixel := range finalLayer {
+		fmt.Printf(pixel)
+		if (i+1)%width == 0 {
 			fmt.Println()
 		}
-	*/
-
+	}
 }
