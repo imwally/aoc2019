@@ -39,9 +39,9 @@ func TestIntcode(t *testing.T) {
 		m := machine.New(c.Input)
 		m.Run()
 		got := m.DumpMemory()
-		for i, v := range got {
-			if v != c.Result[i] {
-				t.Errorf("error: got %v, expected %v", v, c.Result[i])
+		for i := 0; i < len(c.Result); i++ {
+			if got[i] != c.Result[i] {
+				t.Errorf("error: got %v, expected %v", got[i], c.Result[i])
 			}
 		}
 	}
