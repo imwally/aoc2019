@@ -26,6 +26,7 @@ func main() {
 
 	chunk := 0
 
+	// Part 1
 	min := 9999999
 	numOnes := 0
 	numTwos := 0
@@ -48,6 +49,9 @@ func main() {
 
 	fmt.Println("Part 1:", numOnes*numTwos)
 
+	// Part 2
+	fmt.Println("Part 2:")
+
 	finalLayer := make([]string, height*width)
 
 	i, j := 0, 0
@@ -65,8 +69,6 @@ func main() {
 		}
 		i++
 	}
-
-	fmt.Println("Part 2:")
 
 	for i, pixel := range finalLayer {
 		fmt.Printf(pixel)
