@@ -1,18 +1,29 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestPart1(t *testing.T) {
 	input := "123456789012"
 
-	width := 3
+	testCases := []string{
+		"123",
+		"456",
+		"789",
+		"012",
+	}
 
-	chunk := 0
+	width := 3
+	chunkStart := 0
+
 	for i := 0; i < (len(input) / width); i++ {
-		fmt.Println(input[chunk : chunk+width])
-		chunk += width
+		got := input[chunkStart : chunkStart+width]
+		chunkStart += width
+
+		expected := testCases[i]
+		if got != expected {
+			t.Errorf("error: got %v, expectd %v", got, expected)
+		}
 	}
 }
