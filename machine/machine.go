@@ -59,8 +59,6 @@ func (m *Machine) parseInstruction() {
 		return
 	}
 
-	fmt.Println(ins, m.Operation)
-
 	// Parameter Modes
 	//
 	// Assume immediate mode by default. This allows us easily update the
