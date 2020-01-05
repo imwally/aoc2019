@@ -45,6 +45,10 @@ func main() {
 			m2.Run()
 			program2 = m2.DumpMemory()
 
+			// Don't expand memory on each run, negate the 100
+			// factor increase
+			program2 = program2[:len(program2)/100]
+
 			if program2[0] == 19690720 {
 				fmt.Println("Part 2:", 100*program2[1]+program[2])
 				break
