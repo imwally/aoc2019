@@ -65,22 +65,35 @@ func TestPart2(t *testing.T) {
 
 	seq := []int{5, 6, 7, 8, 9}
 	output := 0
+	max := 0
 
-	for i := 0; ; i++ {
+	// Initialize the machines
+	for i := 0; i < len(machines); i++ {
 		m := machines[i]
 		m.SaveOutput()
-		m.MockInput([]int{seq[i], output, 0})
+		m.MockInput([]int{seq[i], output})
 		m.RunFor(1)
 		m.Run()
 		output = m.Output
-		if i == 4 && m.Halted {
-			return
-		}
+	}
 
-		if i == len(seq)-1 {
+	// Start feedback loop
+	for i := 0; i < len(machines); i++ {
+		m := machines[i]
+		m.SaveOutput()
+		m.MockInput([]int{output})
+		m.RunFor(1)
+		m.Run()
+		output = m.Output
+		if output > max {
+			max = output
+		}
+		if i == 4 && m.Halted {
+			break
+		}
+		if i == 4 {
 			i = -1
 		}
-		m.IP = 0
 	}
 
 	got := output

@@ -74,7 +74,7 @@ func Part2(program []int) int {
 		}
 
 		// Initialize machines on first round
-		for i := 0; i < len(perm); i++ {
+		for i := 0; i < len(machines); i++ {
 			m := machines[i]
 			m.SaveOutput()
 			m.MockInput([]int{perm[i], output})
@@ -84,7 +84,7 @@ func Part2(program []int) int {
 		}
 
 		// Start feedback loop
-		for i := 0; i < len(perm); i++ {
+		for i := 0; i < len(machines); i++ {
 			m := machines[i]
 			m.SaveOutput()
 			m.MockInput([]int{output})
