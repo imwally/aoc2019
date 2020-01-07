@@ -21,9 +21,9 @@ type Machine struct {
 	IP           int
 	RelativeBase int
 	Operation    int
-	Parameters   []int
-	Memory       []int
+	Instruction  int
 	Output       int
+	Memory       []int
 	MockedInput  []int
 	MockIndex    int
 	StoreOutput  bool
@@ -34,90 +34,79 @@ type Machine struct {
 }
 
 func New(opcodes []int) *Machine {
-	parameters := make([]int, 3)
 	memory := make([]int, len(opcodes)*100)
 	copy(memory, opcodes)
 
 	return &Machine{
-		IP:         0,
-		Operation:  0,
-		Parameters: parameters,
-		Memory:     memory,
-		Mock:       false,
-		MockIndex:  0,
-		Halted:     false,
+		Memory: memory,
 	}
 }
 
-func (m *Machine) parseInstruction() {
-	ins := m.Memory[m.IP]
-	m.Operation = ins % 100
+// Parameter Modes
+//
+// 0 - Position    m.Memory[m.Memory[m.IP]]
+// 1 - Immediate   m.Memory[m.IP]
+// 2 - Relative    m.Memory[m.RelativeBase+m.Memory[m.IP]]
+func (m *Machine) oneParamater() int {
+	paramModes := m.Instruction - m.Operation
 
-	// Don't parse parameter if machine needs to halt
-	if m.Operation == opHalt {
-		m.halt()
-		return
-	}
-
-	// Parameter Modes
-	//
-	// Assume immediate mode by default. This allows us easily update the
-	// parameter to position mode if need be.
-	//
-	// 1 - Immediate Mode	p1 := m.Memory[m.IP]	Value at IP
-	// 0 - Position Mode	p1 = m.Memory[p1]	Value at what IP points to
-	paramModes := ins - m.Operation
 	pm1 := paramModes % 1000 / 100
-	pm2 := paramModes % 10000 / 1000
-	pm3 := paramModes % 100000 / 10000
 
-	// First Parameter
-	//
-	// All operations assume there is at least one parameter. This is the
-	// next value in memory.
 	m.IP++
-	m.Parameters[0] = m.Memory[m.IP]
+	p1 := m.Memory[m.IP]
 	if pm1 == 0 {
-		m.Parameters[0] = m.Memory[m.Parameters[0]]
+		p1 = m.Memory[p1]
 	}
 	if pm1 == 2 {
 		if m.Operation == opInput {
-			m.Parameters[0] = m.RelativeBase + m.Parameters[0]
+			p1 = m.RelativeBase + p1
 		} else {
-			m.Parameters[0] = m.Memory[m.RelativeBase+m.Parameters[0]]
+			p1 = m.Memory[m.RelativeBase+p1]
 		}
 	}
 
-	// Certain operations only require a single parameter. Don't parse or
-	// increase the IP for those operations.
-	if m.Operation == opInput || m.Operation == opOutput || m.Operation == opAdjustRel {
-		// Stop further parsing
-		return
-	}
+	return p1
+}
 
-	// Second Parameter
-	//
-	// Next value in memory after the first parameter
+func (m *Machine) twoParameters() (int, int) {
+	paramModes := m.Instruction - m.Operation
+
+	p1 := m.oneParamater()
+	pm2 := paramModes % 10000 / 1000
+
 	m.IP++
-	m.Parameters[1] = m.Memory[m.IP]
+	p2 := m.Memory[m.IP]
 	if pm2 == 0 {
-		m.Parameters[1] = m.Memory[m.Parameters[1]]
+		p2 = m.Memory[p2]
 	}
 	if pm2 == 2 {
-		m.Parameters[1] = m.Memory[m.RelativeBase+m.Parameters[1]]
+		p2 = m.Memory[m.RelativeBase+p2]
 	}
 
-	// Third Parameter
-	if pm3 > 0 {
-		m.IP++
-		m.Parameters[2] = m.Memory[m.IP]
-		if pm3 == 0 {
-			m.Parameters[2] = m.Memory[m.Parameters[2]]
-		}
-		if pm3 == 2 {
-			m.Parameters[2] = m.Memory[m.RelativeBase+m.Parameters[2]]
-		}
+	return p1, p2
+}
+
+func (m *Machine) threeParameters() (int, int, int) {
+	paramModes := m.Instruction - m.Operation
+
+	p1, p2 := m.twoParameters()
+	pm3 := paramModes % 100000 / 10000
+
+	m.IP++
+	p3 := m.IP
+	if pm3 == 0 {
+		p3 = m.Memory[p3]
 	}
+	if pm3 == 2 {
+		p3 = m.RelativeBase + p3
+	}
+
+	return p1, p2, p3
+}
+
+func (m *Machine) parseInstruction() {
+	m.Instruction = m.Memory[m.IP]
+	m.Operation = m.Instruction % 100
 }
 
 func (m *Machine) halt() {
@@ -125,20 +114,14 @@ func (m *Machine) halt() {
 }
 
 func (m *Machine) add() {
-	p1 := m.Parameters[0]
-	p2 := m.Parameters[1]
+	p1, p2, p3 := m.threeParameters()
 
-	m.IP++
-	p3 := m.Memory[m.IP]
 	m.Memory[p3] = p1 + p2
 }
 
 func (m *Machine) multiply() {
-	p1 := m.Parameters[0]
-	p2 := m.Parameters[1]
+	p1, p2, p3 := m.threeParameters()
 
-	m.IP++
-	p3 := m.Memory[m.IP]
 	m.Memory[p3] = p1 * p2
 }
 
@@ -153,13 +136,13 @@ func (m *Machine) input() {
 		v = m.MockedInput[m.MockIndex]
 		m.MockIndex++
 	}
-	p1 := m.Parameters[0]
 
+	p1 := m.oneParamater()
 	m.Memory[p1] = v
 }
 
 func (m *Machine) output() {
-	p1 := m.Parameters[0]
+	p1 := m.oneParamater()
 	if m.StoreOutput {
 		m.Output = p1
 	} else {
@@ -168,8 +151,7 @@ func (m *Machine) output() {
 }
 
 func (m *Machine) jumpIfTrue() {
-	p1 := m.Parameters[0]
-	p2 := m.Parameters[1]
+	p1, p2 := m.twoParameters()
 
 	if p1 != 0 {
 		m.IP = p2 - 1
@@ -177,8 +159,7 @@ func (m *Machine) jumpIfTrue() {
 }
 
 func (m *Machine) jumpIfFalse() {
-	p1 := m.Parameters[0]
-	p2 := m.Parameters[1]
+	p1, p2 := m.twoParameters()
 
 	if p1 == 0 {
 		m.IP = p2 - 1
@@ -186,11 +167,8 @@ func (m *Machine) jumpIfFalse() {
 }
 
 func (m *Machine) lessThan() {
-	p1 := m.Parameters[0]
-	p2 := m.Parameters[1]
+	p1, p2, p3 := m.threeParameters()
 
-	m.IP++
-	p3 := m.Memory[m.IP]
 	if p1 < p2 {
 		m.Memory[p3] = 1
 	} else {
@@ -199,11 +177,8 @@ func (m *Machine) lessThan() {
 }
 
 func (m *Machine) equals() {
-	p1 := m.Parameters[0]
-	p2 := m.Parameters[1]
+	p1, p2, p3 := m.threeParameters()
 
-	m.IP++
-	p3 := m.Memory[m.IP]
 	if p1 == p2 {
 		m.Memory[p3] = 1
 	} else {
@@ -212,7 +187,7 @@ func (m *Machine) equals() {
 }
 
 func (m *Machine) adjustRelativeBase() {
-	p1 := m.Parameters[0]
+	p1 := m.oneParamater()
 	m.RelativeBase += p1
 }
 
@@ -240,6 +215,8 @@ func (m *Machine) RunFor(times int) {
 func (m *Machine) Run() {
 	for !m.Halted {
 		m.parseInstruction()
+
+		//fmt.Println(m.IP, m.Instruction)
 
 		switch m.Operation {
 		case opHalt:
