@@ -53,13 +53,18 @@ func (m *Machine) oneParamater() int {
 	pm1 := paramModes % 1000 / 100
 
 	m.IP++
-	p1 := m.Memory[m.IP]
+	p1 := 0
+	if m.Operation == opInput {
+		p1 = m.IP
+	} else {
+		p1 = m.Memory[m.IP]
+	}
 	if pm1 == 0 {
 		p1 = m.Memory[p1]
 	}
 	if pm1 == 2 {
 		if m.Operation == opInput {
-			p1 = m.RelativeBase + p1
+			p1 = m.RelativeBase + m.Memory[m.IP]
 		} else {
 			p1 = m.Memory[m.RelativeBase+p1]
 		}
@@ -98,7 +103,7 @@ func (m *Machine) threeParameters() (int, int, int) {
 		p3 = m.Memory[p3]
 	}
 	if pm3 == 2 {
-		p3 = m.RelativeBase + p3
+		p3 = m.RelativeBase + m.Memory[p3]
 	}
 
 	return p1, p2, p3
